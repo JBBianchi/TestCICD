@@ -20,11 +20,6 @@ jobs:
           git_user_signingkey: true
           git_commit_gpgsign: true
 
-      - name: Reset Origin
-        run: |
-          git remote set-url origin "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
-          git checkout ${{ github.ref_name }}
-
       - name: Install Versioning.NET
         run: |
           dotnet tool install --global Versioning.NET
