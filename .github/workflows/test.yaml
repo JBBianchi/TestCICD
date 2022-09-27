@@ -15,4 +15,4 @@ jobs:
             
       - name: Outputs
         shell: bash
-        run: echo ${steps.meta.outputs.tags}
+        run: echo $steps.meta.outputs.tags
