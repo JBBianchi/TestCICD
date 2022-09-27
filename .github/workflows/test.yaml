@@ -1,0 +1,18 @@
+name: Publish
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  format-tags:
+    runs-on: ubuntu-latest
+    steps:
+      # - name: Format
+      #   uses: actions/github-script@v4
+      #   with:
+      #     script: |
+            
+      - name: Outputs
+        shell: bash
+        run: echo ${steps.meta.outputs.tags}
