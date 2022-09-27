@@ -8,13 +8,21 @@ jobs:
   format-tags:
     runs-on: ubuntu-latest
     steps:
-      # - name: Format
-      #   uses: actions/github-script@v4
-      #   with:
-      #     script: |
-            
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+      -
+        name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            name/app
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
       - name: Outputs
         shell: bash
-        run: echo $tags
-        with:
-          tags: ${{ steps.meta.outputs.tags }}
+        run: echo "${{ steps.meta.outputs.tags }}"
