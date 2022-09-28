@@ -32,7 +32,7 @@ jobs:
 
       - name: Reset Origin
         run: |
-          git remote set-url origin "https://${{ steps.import-gpg.outputs.name }}:${{ secrets.BOT_PAT }}@github.com/${{ github.repository }}.git"
+          git remote set-url origin "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
           git checkout ${{ github.ref_name }}
           git config --global user.email "${{ steps.import-gpg.outputs.email }}"
           git config --global user.name "${{ steps.import-gpg.outputs.name }}"
