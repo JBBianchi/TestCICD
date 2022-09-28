@@ -34,12 +34,6 @@ jobs:
         run: |
           git remote set-url origin "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
           git checkout ${{ github.ref_name }}
-          git config --global user.email "${{ steps.import-gpg.outputs.email }}"
-          git config --global user.name "${{ steps.import-gpg.outputs.name }}"
-          git config --global user.signingkey "${{ steps.import-gpg.outputs.keyid }}"
-          git config user.email "${{ steps.import-gpg.outputs.email }}"
-          git config user.name "${{ steps.import-gpg.outputs.name }}"
-          git config user.signingkey "${{ steps.import-gpg.outputs.keyid }}"
 
       - name: Install Versioning.NET
         run: |
@@ -48,3 +42,7 @@ jobs:
       - name: Increment Version
         run: |
           dotnet-version increment-version-with-git -g "." --branch-name ${{ github.ref_name }} --author-email ${{ steps.import-gpg.outputs.email }}
+
+      - name: Sign last commit
+        run: |
+          git commit --amend --no-edit -S
