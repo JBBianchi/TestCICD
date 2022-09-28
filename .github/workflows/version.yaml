@@ -24,7 +24,7 @@ jobs:
 
       - name: Reset Origin
         run: |
-          git remote set-url origin "https://${{ steps.import-gpg.outputs.email }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          git remote set-url origin "https://${{ steps.import-gpg.outputs.name }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
           git checkout ${{ github.ref_name }}
 
       - name: Install Versioning.NET
