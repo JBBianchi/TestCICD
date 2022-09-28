@@ -11,7 +11,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          github-server-url: https://${{ steps.import-gpg.outputs.name }}:${{ secrets.GITHUB_TOKEN }}@github.com
+          github-server-url: https://Neuroglia-Bot:${{ secrets.GITHUB_TOKEN }}@github.com
           fetch-depth: 0
 
       # - name: Reset Origin
