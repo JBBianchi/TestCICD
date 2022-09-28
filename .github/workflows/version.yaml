@@ -33,7 +33,7 @@ jobs:
 
       - name: Install Versioning.NET
         run: |
-          ls
+          ls -al
           dotnet tool install --global Versioning.NET
 
       - name: Increment Version
