@@ -46,3 +46,4 @@ jobs:
       - name: Sign last commit
         run: |
           git commit --amend --no-edit -S
+          git push
