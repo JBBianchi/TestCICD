@@ -2,30 +2,38 @@ name: Build and push nugets
 
 on:
   pull_request:
-    branches:
-      - main
+    branches: [ main ]
     paths-ignore:
       - '.github/**'
   workflow_call:
 
+env:
+  SOLUTION: ./Dummy.sln
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dotnet-version: ['6.0.x' ]
 
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v1
+      - name: Setup .NET ${{ matrix.dotnet-version }}
+        uses: actions/setup-dotnet@v2
         with:
-          dotnet-version: 6.0.x
+          dotnet-version: ${{ matrix.dotnet-version }}
 
       - name: Restore dependencies
-        run: dotnet restore "./Dummy.sln"
+        run: dotnet restore "${{ env.SOLUTION }}"
 
       - name: Build
-        run: dotnet build "./Dummy.sln" --configuration Release --no-restore 
+        run: dotnet build "${{ env.SOLUTION }}" --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test "${{ env.SOLUTION }}" --no-restore --verbosity normal
       # - name: Push
       #   if: github.event_name != 'pull_request' && github.repository == 'neuroglia-io/framework' && github.ref_name == 'main'
       #   run: dotnet nuget push "./src/*/*/bin/Release/*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
