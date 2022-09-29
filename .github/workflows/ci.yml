@@ -15,6 +15,11 @@ jobs:
     secrets: inherit
 
   build:
-    needs: versionning
-    uses: ./.github/workflows/dotnet.yml
+    needs: [versionning]
+    uses: ./.github/workflows/build-dotnet.yml
+    secrets: inherit
+
+  release:
+    needs: [build]
+    uses: ./.github/workflows/release.yml
     secrets: inherit
