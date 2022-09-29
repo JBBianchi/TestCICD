@@ -23,7 +23,7 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Pull last version
+      - name: Pull latest version tag
         if: github.event_name != 'pull_request'
         run: |
           git fetch
