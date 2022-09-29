@@ -1,0 +1,21 @@
+name: Continuous integration
+
+on:
+  push:
+    branches: 
+      - main
+    paths-ignore:
+      - '.github/**'
+  workflow_dispatch:
+
+jobs:
+  versionning:
+    # Skip the job if it's not running in the `neuroglia-io/TestCICD` repo
+    if: github.repository == 'neuroglia-io/TestCICD' && github.ref_name == 'main'
+    uses: ./.github/workflows/versioning.yml
+    secrets: inherit
+
+  build:
+    needs: versionning
+    uses: ./.github/workflows/dotnet.yml
+    secrets: inherit

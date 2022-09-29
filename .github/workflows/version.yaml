@@ -1,85 +1,85 @@
-# IMPORTANT NOTES:
-# For a repo using "protected branches" strategies (approved PR & signed commits or other checks),
-# it is mandatory to use a "power" account PAT because the default git action bot/token
-# doesn't have the required permissions to bypass the aforementioned conditions.
-# To bypass those conditions, "Do not allow bypassing the above settings" must be unchecked
-# in the repo > Settings > Branches > main .
-#
-# In the case of a personal repo, the repo owner will have to give a PAT of its own account
-# as there is no other "admin" possible for the repo, only "collaborators."
-#
-# In the case of an organization repo, an other account can be used. If the org have a free plan, that
-# account will have to be given the "admin" role. If the org have a paid plan, a more restrictive
-# "custom role" could be forged and assigned to that user.
-#
-# In any case, 3 secrets will have to be added to the repo > Settings > Secrets > Actions
-# - BOT_USERNAME : the GitHub username of the "power account"
-# - BOT_EMAIL : the GitHub email addreess of the "power account"
-# - BOT_PAT : the personal access toek of the "power account" with enough permissions associated
-#
-# For now, `dotnet-version` doesn't seem to support signing commits/tags but, in the future
-# `BOT_USERNAME` and `BOT_EMAIL` could be replaced by `BOT_GPG_PRIVATE_KEY` instead.
-# In that case, when generating the GPG key, use the bot username and email when asked
-# for a name and email (https://docs.github.com/en/authentication/managing-commit-signature-verification/generating-a-new-gpg-key)
-# After exporting the public key and associating it to the GH account, export the private key using (and set the repo's secret):
-# `gpg --armor --export-secret-key bot@email.com`
-# where `bot@email.com` is the email configured in the previous step. (you might need to add `-w0` to the command).
+# # IMPORTANT NOTES:
+# # For a repo using "protected branches" strategies (approved PR & signed commits or other checks),
+# # it is mandatory to use a "power" account PAT because the default git action bot/token
+# # doesn't have the required permissions to bypass the aforementioned conditions.
+# # To bypass those conditions, "Do not allow bypassing the above settings" must be unchecked
+# # in the repo > Settings > Branches > main .
+# #
+# # In the case of a personal repo, the repo owner will have to give a PAT of its own account
+# # as there is no other "admin" possible for the repo, only "collaborators."
+# #
+# # In the case of an organization repo, an other account can be used. If the org have a free plan, that
+# # account will have to be given the "admin" role. If the org have a paid plan, a more restrictive
+# # "custom role" could be forged and assigned to that user.
+# #
+# # In any case, 3 secrets will have to be added to the repo > Settings > Secrets > Actions
+# # - BOT_USERNAME : the GitHub username of the "power account"
+# # - BOT_EMAIL : the GitHub email addreess of the "power account"
+# # - BOT_PAT : the personal access toek of the "power account" with enough permissions associated
+# #
+# # For now, `dotnet-version` doesn't seem to support signing commits/tags but, in the future
+# # `BOT_USERNAME` and `BOT_EMAIL` could be replaced by `BOT_GPG_PRIVATE_KEY` instead.
+# # In that case, when generating the GPG key, use the bot username and email when asked
+# # for a name and email (https://docs.github.com/en/authentication/managing-commit-signature-verification/generating-a-new-gpg-key)
+# # After exporting the public key and associating it to the GH account, export the private key using (and set the repo's secret):
+# # `gpg --armor --export-secret-key bot@email.com`
+# # where `bot@email.com` is the email configured in the previous step. (you might need to add `-w0` to the command).
 
-name: Auto versioning .NET
+# name: Auto versioning .NET
 
-on:
-  push:
-    branches: [ main ]
+# on:
+#   push:
+#     branches: [ main ]
 
-jobs:
-  build:
-    runs-on: ubuntu-18.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.BOT_PAT }}
+# jobs:
+#   version:
+#     runs-on: ubuntu-18.04
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v3
+#         with:
+#           fetch-depth: 0
+#           token: ${{ secrets.BOT_PAT }}
 
-      - name: Reset Origin
-        run: |
-          git remote set-url origin "https://${{ secrets.BOT_USERNAME }}:${{ secrets.BOT_PAT }}@github.com/${{ github.repository }}.git"
-          git checkout ${{ github.ref_name }}
+#       - name: Reset Origin
+#         run: |
+#           git remote set-url origin "https://${{ secrets.BOT_USERNAME }}:${{ secrets.BOT_PAT }}@github.com/${{ github.repository }}.git"
+#           git checkout ${{ github.ref_name }}
 
-      - name: Install Versioning.NET
-        run: |
-          dotnet tool install --global Versioning.NET
+#       - name: Install Versioning.NET
+#         run: |
+#           dotnet tool install --global Versioning.NET
 
-      - name: Increment Version
-        run: |
-          dotnet-version increment-version-with-git -g "." --branch-name ${{ github.ref_name }} --author-email ${{ secrets.BOT_EMAIL }}
+#       - name: Increment Version
+#         run: |
+#           dotnet-version increment-version-with-git -g "." --branch-name ${{ github.ref_name }} --author-email ${{ secrets.BOT_EMAIL }}
 
-      # The following could be used to sign the commit/tag but `dotnet-version` doesn't seem to sign the said commit.
-      # It could also be used to infer the bot user name (${{ steps.import-gpg.outputs.name }}) and 
-      # email address (${{ steps.import-gpg.outputs.email }}) from the private key ${{ secrets.BOT_GPG_PRIVATE_KEY }}.
-      # For now, instead of the private key, two secrets will be used, ${{ secrets.BOT_USERNAME }} and ${{ secrets.BOT_EMAIL }}
-      # In the future, if `dotnet-version` support signing commits/tags, it would be better to use the following.
+#       # The following could be used to sign the commit/tag but `dotnet-version` doesn't seem to sign the said commit.
+#       # It could also be used to infer the bot user name (${{ steps.import-gpg.outputs.name }}) and 
+#       # email address (${{ steps.import-gpg.outputs.email }}) from the private key ${{ secrets.BOT_GPG_PRIVATE_KEY }}.
+#       # For now, instead of the private key, two secrets will be used, ${{ secrets.BOT_USERNAME }} and ${{ secrets.BOT_EMAIL }}
+#       # In the future, if `dotnet-version` support signing commits/tags, it would be better to use the following.
 
-      # - name: Import GPG key
-      #   id: import-gpg
-      #   uses: crazy-max/ghaction-import-gpg@v4
-      #   with:
-      #     gpg_private_key: ${{ secrets.BOT_GPG_PRIVATE_KEY }}
-      #     git_config_global: true
-      #     git_user_signingkey: true
-      #     git_commit_gpgsign: true
-      #     git_tag_gpgsign: true
+#       # - name: Import GPG key
+#       #   id: import-gpg
+#       #   uses: crazy-max/ghaction-import-gpg@v4
+#       #   with:
+#       #     gpg_private_key: ${{ secrets.BOT_GPG_PRIVATE_KEY }}
+#       #     git_config_global: true
+#       #     git_user_signingkey: true
+#       #     git_commit_gpgsign: true
+#       #     git_tag_gpgsign: true
 
-      # - name: Reset Origin
-      #   run: |
-      #     git remote set-url origin "https://${{ steps.import-gpg.outputs.name }}:${{ secrets.BOT_PAT }}@github.com/${{ github.repository }}.git"
-      #     git checkout ${{ github.ref_name }}
-      ##  + git config user/email/signkey ???
+#       # - name: Reset Origin
+#       #   run: |
+#       #     git remote set-url origin "https://${{ steps.import-gpg.outputs.name }}:${{ secrets.BOT_PAT }}@github.com/${{ github.repository }}.git"
+#       #     git checkout ${{ github.ref_name }}
+#       ##  + git config user/email/signkey ???
 
-      # - name: Install Versioning.NET
-      #   run: |
-      #     dotnet tool install --global Versioning.NET
+#       # - name: Install Versioning.NET
+#       #   run: |
+#       #     dotnet tool install --global Versioning.NET
 
-      # - name: Increment Version
-      #   run: |
-      #     dotnet-version increment-version-with-git -g "." --branch-name ${{ github.ref_name }} --author-email ${{ steps.import-gpg.outputs.email }}
+#       # - name: Increment Version
+#       #   run: |
+#       #     dotnet-version increment-version-with-git -g "." --branch-name ${{ github.ref_name }} --author-email ${{ steps.import-gpg.outputs.email }}
