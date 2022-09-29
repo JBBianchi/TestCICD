@@ -10,13 +10,28 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          fetch-depth: 2
+          fetch-depth: 0
 
       - name: Pull latest version tag
         run: |
           git fetch
           git pull
-          git describe --tags $(git rev-list --tags --max-count=1) >> 
+          echo "LATEST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))" >> $GITHUB_ENV
+
+      - name: Retrieve build items
+        uses: actions/cache@v3
+        id: build-dotnet-cache
+        with:
+          path: ./**/Release/*.nupkg
+          key: build-dotnet-cache-${{ github.sha }}
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          token: ${{ secrets.BOT_PAT }}
+          files: |
+            **/Release/*.nupkg
+          # LICENSE
 
   # publish:
   #   runs-on: ubuntu-latest

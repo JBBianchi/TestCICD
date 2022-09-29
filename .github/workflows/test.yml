@@ -1,51 +1,51 @@
-# name: Publish
-
-# on:
-#   release:
-#     types: [published]
-
-# jobs:
-#   format-tags:
-#     runs-on: ubuntu-latest
-#     steps:
-#       -
-#         name: Checkout
-#         uses: actions/checkout@v3
-#       -
-#         name: Docker meta
-#         id: meta
-#         uses: docker/metadata-action@v4
-#         with:
-#           images: ${{ env.REGISTRY }}/${{ github.repository }}
-#           tags: |
-#             type=semver,pattern={{version}}
-#             type=semver,pattern={{major}}.{{minor}}
-#       - name: Outputs
-#         shell: bash
-#         run: echo "${{ steps.meta.outputs.tags }}"
-
-name: Test manual
+name: Publish
 
 on:
-  push:
-    branches: [main]
+  release:
+    types: [published]
 
 jobs:
-  test:
+  format-tags:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      -
+        name: Checkout
         uses: actions/checkout@v3
+      -
+        name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
         with:
-          fetch-depth: 2
+          images: ${{ env.REGISTRY }}/${{ github.repository }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+      - name: Outputs
+        shell: bash
+        run: echo "${{ steps.meta.outputs.tags }}"
 
-      - name: Pull latest version tag
-        run: |
-          git fetch
-          git pull
-          echo "LATEST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))" >> $GITHUB_ENV
+# name: Test manual
+
+# on:
+#   push:
+#     branches: [main]
+
+# jobs:
+#   test:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v3
+#         with:
+#           fetch-depth: 0
+
+#       - name: Pull latest version tag
+#         run: |
+#           git fetch
+#           git pull
+#           echo "LATEST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))" >> $GITHUB_ENV
       
-      - name: Echo latest version tag
-        run: |
-          echo $LATEST_TAG
-          echo ${LATEST_TAG:1} 
+#       - name: Echo latest version tag
+#         run: |
+#           echo $LATEST_TAG
+#           echo ${LATEST_TAG:1} 
