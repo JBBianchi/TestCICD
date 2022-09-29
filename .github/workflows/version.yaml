@@ -41,4 +41,4 @@ jobs:
         run: |
           git pull
           git commit --amend --no-edit -S
-          git push
+          git push --force
