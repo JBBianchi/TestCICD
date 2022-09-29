@@ -1,6 +1,6 @@
 # IMPORTANT NOTES:
 # For a repo using "protected branches" strategies (approved PR & signed commits or other checks),
-# it is mandatory to use a "power" account with a PAT because the default git action bot/token
+# it is mandatory to use a "power" account PAT because the default git action bot/token
 # doesn't have the required permissions to bypass the aforementioned conditions.
 # To bypass those conditions, "Do not allow bypassing the above settings" must be unchecked
 # in the repo > Settings > Branches > main .
@@ -12,7 +12,7 @@
 # account will have to be given the "admin" role. If the org have a paid plan, a more restrictive
 # "custom role" could be forged and assigned to that user.
 #
-# In any case, 3 secrets will need to be added to the repo > Settings > Secrets > Actions
+# In any case, 3 secrets will have to be added to the repo > Settings > Secrets > Actions
 # - BOT_USERNAME : the GitHub username of the "power account"
 # - BOT_EMAIL : the GitHub email addreess of the "power account"
 # - BOT_PAT : the personal access toek of the "power account" with enough permissions associated
@@ -21,7 +21,7 @@
 # `BOT_USERNAME` and `BOT_EMAIL` could be replaced by `BOT_GPG_PRIVATE_KEY` instead.
 # In that case, when generating the GPG key, use the bot username and email when asked
 # for a name and email (https://docs.github.com/en/authentication/managing-commit-signature-verification/generating-a-new-gpg-key)
-# After exporting the public key and associating it to the GH account, export the private key using:
+# After exporting the public key and associating it to the GH account, export the private key using (and set the repo's secret):
 # `gpg --armor --export-secret-key bot@email.com`
 # where `bot@email.com` is the email configured in the previous step. (you might need to add `-w0` to the command).
 
